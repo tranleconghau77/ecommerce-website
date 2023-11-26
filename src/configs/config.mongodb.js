@@ -1,6 +1,5 @@
 'use strict';
 
-// level 0
 const dev = {
   app: {
     port: process.env.DEV_APP_PORT || 3052,
@@ -12,7 +11,6 @@ const dev = {
   },
 };
 
-// level 1
 const production = {
   app: {
     port: process.env.PRODUCTION_APP_PORT || 3000,

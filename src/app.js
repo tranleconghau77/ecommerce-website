@@ -14,13 +14,10 @@ app.use(compression());
 
 // init db
 require('./dbs/init.mongodb');
-checkOverLoad();
+// checkOverLoad();
 
 // init router
-app.get('/', (req, res, next) => {
-  return res.status(200).json({ message: 'Welcome Ecommerce Server' });
-});
-
+app.use('', require('./routes/index'));
 // handle error
 
 module.exports = app;
