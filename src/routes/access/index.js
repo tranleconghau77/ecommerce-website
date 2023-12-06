@@ -2,8 +2,9 @@
 
 const express = require('express');
 const accessController = require('../../controllers/access.controller');
+const { asyncHandlerError } = require('../../auth/checkAuth');
 const router = express.Router();
 
-router.post('/shop/signup', accessController.signUp);
+router.post('/shop/signup', asyncHandlerError(accessController.signUp));
 
 module.exports = router;
