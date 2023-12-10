@@ -6,7 +6,7 @@ const StatusCode = {
 };
 
 const ReasonStatusCode = {
-  FORBIDDEN: 'Bas request error',
+  FORBIDDEN: 'Bad request error',
   CONFLICT: 'Conflict error',
 };
 

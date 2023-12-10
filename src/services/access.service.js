@@ -7,6 +7,7 @@ const KeyTokenService = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 const { BadRequestError } = require('../core/error.response');
+const { findByEmail } = require('./shop.service');
 
 const RoleShop = {
   SHOP: 'SHOP',
@@ -18,7 +19,6 @@ const RoleShop = {
 class AccessService {
   static signUp = async ({ name, email, password }) => {
     //step1: check email exists
-    a;
     const holderShop = await shopModel.findOne({ email }).lean();
     if (holderShop) {
       throw new BadRequestError('Error: Shop already registered');
@@ -75,6 +75,22 @@ class AccessService {
       code: 200,
       metadata: null,
     };
+  };
+
+  // check email
+  // match password
+  // create accessToken vs refreshToken
+  // generate Token
+  // get data return login
+  static login = async (email, password, refreshToken = null) => {
+    const foundShop = await findByEmail(email);
+    if (!foundShop) {
+      throw new BadRequestError('Shop is not registered');
+    }
+
+    const match = bcrypt.compare(password, foundShop.password);
+    if (!match) {
+    }
   };
 }
 
