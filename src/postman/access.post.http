@@ -1,9 +1,9 @@
-@url_dev=http://localhost:3052/v1/api
+@url_dev=http://localhost:3056/v1/api
 
 ### signup
 POST {{url_dev}}/shop/signup
 Content-Type: application/json
-x-api-key: 7c33c913c0fb9d348a8303d6d4f2da51d7a57ae431fa7ec9f9f6bd9b6ec50f8dcde0d99efc2d69c7ff51d74b156f91153447e83c19ff9c6802e97386e0ed983d
+x-api-key: 547d05333246f70121ce0399835a5b53daea07c208bd5b33b085f56ae3df31d6bd4c629207d4be912abd54090b465d4a5978a580fd6f39ee1513973df746eed7
 
 {
     "name": "AAAAaaa",
