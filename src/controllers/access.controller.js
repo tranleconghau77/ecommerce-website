@@ -3,8 +3,23 @@
 const AccessService = require('../services/access.service');
 const { OK, CREATED, SuccessResponse } = require('../core/success.response');
 class AccessController {
+  handlerRefreshToken = async (req, res, next) => {
+    // new SuccessResponse({
+    //   message: 'Get Token Successfully!',
+    //   metadata: await AccessService.handlerRefreshToken(req.body.refreshToken),
+    // }).send(res);
+
+    new SuccessResponse({
+      message: 'Get Token Successfully!',
+      metadata: await AccessService.handlerRefreshTokenV2({
+        refreshToken: req.refreshToken,
+        user: req.user,
+        keyStore: req.keyStore,
+      }),
+    }).send(res);
+  };
+
   logout = async (req, res, next) => {
-    console.log(11111, req.keyStore);
     new SuccessResponse({
       message: 'Logout Successfully!',
       metadata: await AccessService.logout(req.keyStore),
