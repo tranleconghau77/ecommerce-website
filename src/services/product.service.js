@@ -7,9 +7,16 @@ const {
   electronic,
   furniture,
 } = require('../models/product.model');
+
 const {
   Types: { ObjectId },
 } = require('mongoose');
+
+const {
+  findAllDraftsForShop,
+  publishProductByShop,
+  findAllPublishsForShop,
+} = require('../models/repository/product.repo');
 
 // define Factory class to create product
 class ProductFactory {
@@ -41,6 +48,22 @@ class ProductFactory {
       throw new BadRequestError(`Invalid Product Type ${type}`);
 
     return new productClass(payload).createProduct();
+  }
+
+  // PUT //
+  static async publishProductByShop({ product_shop, product_id }) {
+    return await publishProductByShop({ product_shop, product_id });
+  }
+
+  // QUERY //
+  static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isDraft: true };
+    return await findAllDraftsForShop(query, limit, skip);
+  }
+
+  static async findAllPublishsForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = { product_shop, isPublished: true };
+    return await findAllPublishsForShop(query, limit, skip);
   }
 }
 
