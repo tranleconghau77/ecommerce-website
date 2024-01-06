@@ -11,17 +11,18 @@ router.get(
   asyncHandler(productController.getListSearchProduct),
 );
 router.get('', asyncHandler(productController.findAllProducts));
-router.get('/:product_id', asyncHandler(productController.findProduct));
+router.get('/:productId', asyncHandler(productController.findProduct));
 
 router.use(authenticationV2);
 
 router.post('', asyncHandler(productController.createProduct));
+router.put('/:productId', asyncHandler(productController.updateProduct));
 router.post(
-  '/publish/:id',
+  '/publish/:productId',
   asyncHandler(productController.publishProductByShop),
 );
 router.post(
-  '/unpublish/:id',
+  '/unpublish/:productId',
   asyncHandler(productController.unPublishProductByShop),
 );
 

@@ -20,7 +20,9 @@ const {
   searchProductsByUser,
   findAllProducts,
   findProduct,
+  updateProductById,
 } = require('../models/repository/product.repo');
+const { removeUndefinedProp, updateNestedObjectParser } = require('../utils');
 
 // define Factory class to create product
 class ProductFactory {
@@ -54,12 +56,12 @@ class ProductFactory {
     return new productClass(payload).createProduct();
   }
 
-  static async updateProduct(type, payload) {
+  static async updateProduct(type, productId, payload) {
     const productClass = ProductFactory.productRegistry[type];
     if (!productClass)
       throw new BadRequestError(`Invalid Product Type ${type}`);
 
-    return new productClass(payload).createProduct();
+    return new productClass(payload).updateProduct(productId);
   }
 
   // PUT //
@@ -133,6 +135,15 @@ class Product {
     this.product_shop = new ObjectId(this.product_shop);
     return await product.create({ ...this, _id: product_id });
   }
+
+  // update product
+  async updateProduct(productId, payload) {
+    return await updateProductById({
+      productId,
+      payload,
+      model: product,
+    });
+  }
 }
 
 // Define sub-class for different product types Clothing
@@ -148,6 +159,27 @@ class Clothing extends Product {
     if (!newProduct) throw new BadRequestError('create new Clothing error');
 
     return newProduct;
+  }
+
+  async updateProduct(productId) {
+    const objectParams = removeUndefinedProp(this);
+    console.log('KKKKKKKKKK', this);
+    if (objectParams.product_attributes) {
+      // update child
+      await updateProductById({
+        productId,
+        payload: updateNestedObjectParser(
+          removeUndefinedProp(objectParams.product_attributes),
+        ),
+        model: clothing,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(
+      productId,
+      updateNestedObjectParser(removeUndefinedProp(objectParams)),
+    );
+    return updateProduct;
   }
 }
 
@@ -180,6 +212,8 @@ class Furniture extends Product {
 
     return newProduct;
   }
+
+  async updateProduct() {}
 }
 
 // register product type
