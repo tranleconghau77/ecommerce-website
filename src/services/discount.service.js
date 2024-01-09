@@ -2,6 +2,10 @@
 
 const { BadRequestError } = require('../core/error.response');
 const discountModel = require('../models/discount.model');
+const {
+  findAllDiscountCodesUnSelect,
+} = require('../models/repository/discount.repo');
+const { findAllProducts } = require('../models/repository/product.repo');
 const { convertToObejctIdMongoDB } = require('../utils');
 
 /*
@@ -45,12 +49,14 @@ class DiscountService {
     }
 
     // create index for discount code
-    const foundDiscount = await discountModel.findOne({
-      discount_code: code,
-      discount_shopId: convertToObejctIdMongoDB(shopId),
-    });
+    const foundDiscount = await discountModel
+      .findOne({
+        discount_code: code,
+        discount_shopId: convertToObejctIdMongoDB(shopId),
+      })
+      .lean();
 
-    if (foundDiscount && foundDiscount.discount_is_active) {
+    if (foundDiscount) {
       throw new BadRequestError('This discount existed');
     }
 
@@ -75,5 +81,64 @@ class DiscountService {
     });
 
     return newDiscount;
+  }
+
+  static async updateDiscount() {}
+
+  static async getAllProductsByDiscount({ code, shopId, userId, limit, page }) {
+    // create index for discount_code
+    const foundDiscount = await discountModel
+      .findOne({
+        discount_code: code,
+        discount_shopId: convertToObejctIdMongoDB(shopId),
+      })
+      .lean();
+
+    if (!foundDiscount) {
+      throw new BadRequestError('This discount does not exist');
+    }
+
+    const { discount_applies_to, discount_product_ids } = foundDiscount;
+    let products;
+    if (discount_applies_to == 'all') {
+      products = findAllProducts({
+        filter: {
+          product_shop: convertToObejctIdMongoDB(shopId),
+          isPublished: true,
+        },
+        limit: +limit,
+        page: +page,
+        sort: 'ctime',
+        select: ['product_name'],
+      });
+    }
+
+    if (discount_applies_to == 'specific') {
+      products = findAllProducts({
+        filter: {
+          _id: { $in: discount_product_ids },
+          isPublished: true,
+        },
+        limit: +limit,
+        page: +page,
+        sort: 'ctime',
+        select: ['product_name'],
+      });
+    }
+
+    return products;
+  }
+
+  static async getAllDiscountCodesByShop({ limit, page, shopId }) {
+    const discounts = await findAllDiscountCodesUnSelect({
+      limit: +limit,
+      page: +page,
+      filter: {
+        discount_shopId: convertToObejctIdMongoDB(shopId),
+      },
+      unSelect: ['__v', 'discount_shopId'],
+      model: discountModel,
+    });
+    return discounts;
   }
 }
