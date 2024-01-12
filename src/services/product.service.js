@@ -172,7 +172,6 @@ class Clothing extends Product {
 
   async updateProduct(productId) {
     const objectParams = removeUndefinedProp(this);
-    console.log('KKKKKKKKKK', this);
     if (objectParams.product_attributes) {
       // update child
       await updateProductById({
