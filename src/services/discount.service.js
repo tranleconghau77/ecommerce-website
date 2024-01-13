@@ -23,7 +23,7 @@ class DiscountService {
   static async createDiscountCode(payload) {
     const {
       code,
-      start_date: start_date,
+      start_date,
       end_date,
       is_active,
       shopId,
@@ -86,13 +86,7 @@ class DiscountService {
 
   static async updateDiscount() {}
 
-  static async getAllProductsByDiscountCode({
-    code,
-    shopId,
-    userId,
-    limit,
-    page,
-  }) {
+  static async getAllDiscountCodesWithProduct({ code, shopId, limit, page }) {
     // create index for discount_code
     const foundDiscount = await discountModel
       .findOne({
@@ -172,7 +166,7 @@ class DiscountService {
     const foundDiscount = await checkDiscountExists({
       model: discountModel,
       filter: {
-        discount_code: code,
+        discount_code: codeId,
         discount_shopId: convertToObejctIdMongoDB(shopId),
       },
     });
@@ -188,6 +182,9 @@ class DiscountService {
       discount_users_used,
       discount_type,
       discount_value,
+      discount_max_uses_per_user,
+      discount_start_date,
+      discount_end_date,
     } = foundDiscount;
 
     if (!discount_is_active) {

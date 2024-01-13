@@ -14,12 +14,21 @@ class DiscountController {
     }).send(res);
   };
 
-  getAllDiscountCodesByShop = async (req, res, next) => {
+  getAllDiscountCodes = async (req, res, next) => {
     new SuccessResponse({
-      message: 'Get all discount codes successfully!',
+      message: 'Get all discount codes by SHOP successfully!',
       metadata: await DiscountService.getAllDiscountCodesByShop({
         ...req.query,
         shopId: req.user.userId,
+      }),
+    }).send(res);
+  };
+
+  getAllDiscountCodesWithProduct = async (req, res, next) => {
+    new SuccessResponse({
+      message: 'Get all discount codes successfully!',
+      metadata: await DiscountService.getAllDiscountCodesWithProduct({
+        ...req.query,
       }),
     }).send(res);
   };

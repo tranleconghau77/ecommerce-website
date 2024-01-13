@@ -10,12 +10,12 @@ const router = express.Router();
 router.post('/amount', asyncHandler(discountController.getDiscountAmount));
 router.get(
   '/list_product_code',
-  asyncHandler(discountController.getAllDiscountCodesByShop),
+  asyncHandler(discountController.getAllDiscountCodesWithProduct),
 );
 
 router.use(authenticationV2);
 
 router.post('', asyncHandler(discountController.createDiscount));
-router.post('', asyncHandler(discountController.getAllDiscountCodesByShop));
+router.post('', asyncHandler(discountController.getAllDiscountCodes));
 
 module.exports = router;
