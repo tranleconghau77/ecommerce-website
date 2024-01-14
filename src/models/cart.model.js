@@ -33,3 +33,6 @@ const cartSchema = new Schema(
     timestamps: true,
   },
 );
+
+//Export the model
+module.exports = model(DOCUMENT_NAME, cartSchema);
