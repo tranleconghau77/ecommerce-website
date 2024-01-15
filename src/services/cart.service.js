@@ -1,7 +1,9 @@
 'use strict';
 
+const { NotFoundError } = require('../core/error.response');
 const cartModel = require('../models/cart.model');
 const { product } = require('../models/product.model');
+const { getProductById } = require('../models/repository/product.repo');
 const { options } = require('../routes');
 
 /*
@@ -51,7 +53,6 @@ class CartService {
       // create cart for user
       return await CartService.createUserCart({ userId, product });
     }
-
     // cart is empty
     if (!userCart.cart_products.length) {
       userCart.cart_products = [product];
@@ -59,6 +60,70 @@ class CartService {
     }
 
     return await CartService.updateUserCartQuantity({ userId, product });
+  }
+
+  // update cart
+  /* 
+    shop_order_ids: [
+      {
+        shopId:,
+        item_products:[
+          {
+            quantity,
+            price,
+            shopId,
+            old_quantity,
+            productId,
+          }
+        ],
+        version,
+      }
+    ]
+   */
+  static async addToCartV2({ userId, product = {} }) {
+    const { productId, quantity, old_quantity } = shop_order_ids[0]?.item_products[0];
+
+    // check product
+    const foundProduct = await getProductById(productId);
+    if (!foundProduct) {
+      throw new NotFoundError('Product not exist');
+    }
+
+    // compare
+    if (foundProduct.product_shop.toString() !== shop_order_ids[0]?.shopId) {
+      throw new NotFoundError('Product does not belong in shop');
+    }
+
+    if (quantity === 0) {
+      // delete
+    }
+
+    return await CartService.updateUserCartQuantity({
+      userId,
+      product: {
+        productId,
+        quantity: quantity - old_quantity,
+      },
+    });
+  }
+
+  static async deleteProductOfCart({ userId, productId }) {
+    const query = { cart_userId: userId, cart_state: 'active' },
+      updateSet = {
+        $pull: {
+          cart_products: productId,
+        },
+      };
+    const deleteCart = await cartModel.updateOne(query, updateSet);
+    return deleteCart;
+  }
+
+  static async getListUserCart({ userId }) {
+    return await cartModel
+      .findOne({
+        cart_userId: userId,
+      })
+      .lean();
   }
 }
 
