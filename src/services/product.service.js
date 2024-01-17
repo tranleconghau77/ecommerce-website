@@ -1,12 +1,7 @@
 'use strict';
 
 const { BadRequestError } = require('../core/error.response');
-const {
-  product,
-  clothing,
-  electronic,
-  furniture,
-} = require('../models/product.model');
+const { product, clothing, electronic, furniture } = require('../models/product.model');
 
 const {
   Types: { ObjectId },
@@ -51,16 +46,14 @@ class ProductFactory {
     // }
 
     const productClass = ProductFactory.productRegistry[type];
-    if (!productClass)
-      throw new BadRequestError(`Invalid Product Type ${type}`);
+    if (!productClass) throw new BadRequestError(`Invalid Product Type ${type}`);
 
     return new productClass(payload).createProduct();
   }
 
   static async updateProduct(type, productId, payload) {
     const productClass = ProductFactory.productRegistry[type];
-    if (!productClass)
-      throw new BadRequestError(`Invalid Product Type ${type}`);
+    if (!productClass) throw new BadRequestError(`Invalid Product Type ${type}`);
 
     return new productClass(payload).updateProduct(productId);
   }
@@ -100,7 +93,7 @@ class ProductFactory {
       sort,
       page,
       filter,
-      select: ['product_name', 'product_price', 'product_thumb'],
+      select: ['product_name', 'product_price', 'product_thumb', 'product_shop'],
     });
   }
 
@@ -176,9 +169,7 @@ class Clothing extends Product {
       // update child
       await updateProductById({
         productId,
-        payload: updateNestedObjectParser(
-          removeUndefinedProp(objectParams.product_attributes),
-        ),
+        payload: updateNestedObjectParser(removeUndefinedProp(objectParams.product_attributes)),
         model: clothing,
       });
     }
@@ -197,8 +188,7 @@ class Electronics extends Product {
       ...this.product_attributes,
       product_shop: this.product_shop,
     });
-    if (!newElectronics)
-      throw new BadRequestError('create new Electronic error');
+    if (!newElectronics) throw new BadRequestError('create new Electronic error');
 
     const newProduct = await super.createProduct(newElectronics._id);
     if (!newProduct) throw new BadRequestError('create new Electronic error');
