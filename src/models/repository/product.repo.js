@@ -1,18 +1,9 @@
 'use strict';
 
-const {
-  product,
-  electronic,
-  clothing,
-  furniture,
-} = require('../../models/product.model');
+const { product, electronic, clothing, furniture } = require('../../models/product.model');
 
 const { Types } = require('mongoose');
-const {
-  getSelectData,
-  unGetSelectData,
-  convertToObejctIdMongoDB,
-} = require('../../utils');
+const { getSelectData, unGetSelectData, convertToObejctIdMongoDB } = require('../../utils');
 const productModel = require('../../models/product.model');
 
 const findAllDraftsForShop = async (query, limit, skip) => {
@@ -98,19 +89,16 @@ const queryProduct = async (query, limit, skip) => {
     .exec();
 };
 
-const updateProductById = async ({
-  productId,
-  payload,
-  model,
-  isNew = true,
-}) => {
+const updateProductById = async ({ productId, payload, model, isNew = true }) => {
   return await model.findByIdAndUpdate(productId, payload, { new: isNew });
 };
 
 const getProductById = async (product_id) => {
-  return await productModel.findOne({
-    _id: convertToObejctIdMongoDB(product_id).lean(),
-  });
+  return await product
+    .findById({
+      _id: convertToObejctIdMongoDB(product_id),
+    })
+    .lean();
 };
 
 module.exports = {
