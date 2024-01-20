@@ -3,6 +3,7 @@
 const { BadRequestError } = require('../core/error.response');
 const { findCartById } = require('../models/repository/cart.repo');
 const { checkoutProductByServer } = require('../models/repository/product.repo');
+const { getDiscountAmount } = require('./discount.service');
 
 class CheckoutService {
   // checkout without login
@@ -69,7 +70,32 @@ class CheckoutService {
         priceApplyDiscount: checkoutPrice,
         item_products: checkoutProductByServer,
       };
+
+      // if shop_discounts exists check whether gt > 0 or not
+      if (shop_discounts.length > 0) {
+        const { totalPrice = 0, totalDiscount = 0 } = await getDiscountAmount({
+          codeId: shop_discounts[0].codeId,
+          userId,
+          shopId,
+          products: checkProductServer,
+        });
+
+        // total discount
+        checkout_order.totalDiscount = totalDiscount;
+        if (totalDiscount > 0) {
+          itemCheckout.priceApplyDiscount = checkProductServer - totalDiscount;
+        }
+      }
+
+      checkout_order.totalCheckout = itemCheckout.priceApplyDiscount;
+      shop_order_ids_new.push(itemCheckout);
     }
+
+    return {
+      shop_order_ids,
+      shop_order_ids_new,
+      checkout_order,
+    };
   }
 }
 
