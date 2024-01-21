@@ -25,7 +25,11 @@ const apiKey = async (req, res, next) => {
     }
     req.objKey = objKey;
     return next();
-  } catch (error) {}
+  } catch (error) {
+    return res.status(403).json({
+      message: 'Forbidden Error',
+    });
+  }
 };
 
 const permission = (permission) => {
