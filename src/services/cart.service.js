@@ -47,7 +47,10 @@ class CartService {
   }
 
   static async addToCart({ userId, product = {} }) {
-    const userCart = await cartModel.findOne({ cart_userId: userId });
+    const userCart = await cartModel.findOne({
+      cart_userId: userId,
+      'cart_products.productId': product.productId,
+    });
 
     if (!userCart) {
       // create cart for user
@@ -112,7 +115,7 @@ class CartService {
     const query = { cart_userId: userId, cart_state: 'active' },
       updateSet = {
         $pull: {
-          cart_products: productId,
+          cart_products: { productId },
         },
       };
     const deleteCart = await cartModel.updateOne(query, updateSet);

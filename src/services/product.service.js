@@ -127,6 +127,7 @@ class Product {
   // create new Product
   async createProduct(product_id) {
     this.product_shop = new ObjectId(this.product_shop);
+    console.log('PPPPPPPPPPPPP');
     const newProduct = await product.create({ ...this, _id: product_id });
     if (newProduct) {
       await insertInventory({
@@ -157,6 +158,7 @@ class Clothing extends Product {
     });
     if (!newClothing) throw new BadRequestError('create new Clothing error');
 
+    console.log(444444444444);
     const newProduct = await super.createProduct(newClothing._id);
     if (!newProduct) throw new BadRequestError('create new Clothing error');
 
