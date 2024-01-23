@@ -195,10 +195,7 @@ class DiscountService {
       throw new NotFoundError(`Discount are out!`);
     }
 
-    if (
-      new Date() < new Date(discount_start_date) ||
-      new Date() > new Date(discount_end_date)
-    ) {
+    if (new Date() < new Date(discount_start_date) || new Date() > new Date(discount_end_date)) {
       throw new NotFoundError(`Discount expired!`);
     }
 
@@ -217,9 +214,7 @@ class DiscountService {
     }
 
     if (discount_max_uses_per_user > 0) {
-      const userUseDiscount = discount_users_used.find(
-        (user) => user.userId === userId,
-      );
+      const userUseDiscount = discount_users_used.find((user) => user.userId === userId);
       if (userUseDiscount) {
         let countUsers;
         countUsers = discount_users_used.reduce((numOfUsers, user) => {
@@ -232,9 +227,7 @@ class DiscountService {
     }
 
     const amount =
-      discount_type === 'fixed_amount'
-        ? discount_value
-        : totalOrder * (discount_value / 100);
+      discount_type === 'fixed_amount' ? discount_value : totalOrder * (discount_value / 100);
 
     return { totalOrder, discount: amount, totalPrice: totalOrder - amount };
   }

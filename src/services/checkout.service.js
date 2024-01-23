@@ -39,14 +39,14 @@ class CheckoutService {
 
     const checkout_order = {
         totalPrice: 0,
-        feeShoip: 0,
+        feeShip: 0,
         totalDiscount: 0,
         totalCheckout: 0,
       },
       shop_order_ids_new = [];
 
     // total bill
-    for (let index = 0; index < shop_order_ids.length; index++) {
+    for (let i = 0; i < shop_order_ids.length; i++) {
       const { shopId, shop_discounts = [], item_products = [] } = shop_order_ids[i];
 
       //check product available
@@ -57,7 +57,7 @@ class CheckoutService {
       if (!checkProductServer[0]) throw new BadRequestError('Order wrong!!!');
 
       // total order
-      const checkoutPrice = checkoutProductByServer.reduce((acc, product) => {
+      const checkoutPrice = checkProductServer.reduce((acc, product) => {
         return acc + product.quantity * product.price;
       }, 0);
 
@@ -68,12 +68,12 @@ class CheckoutService {
         shop_discounts,
         priceRaw: checkoutPrice, // money before discount
         priceApplyDiscount: checkoutPrice,
-        item_products: checkoutProductByServer,
+        item_products: checkProductServer,
       };
 
       // if shop_discounts exists check whether gt > 0 or not
       if (shop_discounts.length > 0) {
-        const { totalPrice = 0, totalDiscount = 0 } = await getDiscountAmount({
+        const { totalPrice = 0, discount = 0 } = await getDiscountAmount({
           codeId: shop_discounts[0].codeId,
           userId,
           shopId,
@@ -81,15 +81,18 @@ class CheckoutService {
         });
 
         // total discount
-        checkout_order.totalDiscount = totalDiscount;
-        if (totalDiscount > 0) {
-          itemCheckout.priceApplyDiscount = checkProductServer - totalDiscount;
+        checkout_order.totalDiscount += discount;
+        if (discount > 0) {
+          itemCheckout.priceApplyDiscount = checkoutPrice - discount;
         }
       }
 
-      checkout_order.totalCheckout = itemCheckout.priceApplyDiscount;
+      checkout_order.totalPrice += itemCheckout.priceRaw;
+
       shop_order_ids_new.push(itemCheckout);
     }
+
+    checkout_order.totalCheckout = checkout_order.totalPrice - checkout_order.totalDiscount;
 
     return {
       shop_order_ids,
