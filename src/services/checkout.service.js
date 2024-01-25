@@ -100,6 +100,30 @@ class CheckoutService {
       checkout_order,
     };
   }
+
+  // order
+  static async orderByUser({
+    shop_order_ids,
+    cartId,
+    userId,
+    user_address = {},
+    user_payment = {},
+  }) {
+    const { shop_order_ids_new, checkout_order } = await CheckoutService.checkoutReview({
+      cartId,
+      userId,
+      shop_order_ids,
+    });
+
+    // check checkout products again whether they exceed the quality of product in the inventory
+    // get new array Products
+    const products = shop_order_ids_new.flatMap((order) => order.item_products);
+    console.log(':::', products);
+
+    for (let i = 0; i < products.length; i++) {
+      const { productId, quantity } = products[i];
+    }
+  }
 }
 
 module.exports = CheckoutService;
