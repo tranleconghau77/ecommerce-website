@@ -2,6 +2,7 @@
 
 const redis = require('redis');
 const { promisify } = require('util');
+const { reservationInventory } = require('../models/repository/inventory.repo');
 const redisClient = redis.createClient();
 
 const pexpire = promisify(redisClient.pExpire).bind(redisClient);
@@ -18,7 +19,18 @@ const acquiredLock = async (productId, quantity, cartId) => {
 
     if (result == 1) {
       // work with inventory
-      return key;
+      const isResersation = await reservationInventory({
+        productId,
+        quantity,
+        cartId,
+      });
+
+      if (isResersation.modifiedCount) {
+        await pexpire(key, expireTime);
+        return key;
+      }
+
+      return null;
     } else {
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
@@ -28,4 +40,9 @@ const acquiredLock = async (productId, quantity, cartId) => {
 const releaseLock = async (keyLock) => {
   const delAsyncKey = promisify(redisClient.del).bind(redisClient);
   return await delAsyncKey(keyLock);
+};
+
+module.exports = {
+  acquiredLock,
+  releaseLock,
 };
