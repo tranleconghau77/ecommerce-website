@@ -4,6 +4,7 @@ const { BadRequestError } = require('../core/error.response');
 const { findCartById } = require('../models/repository/cart.repo');
 const { checkoutProductByServer } = require('../models/repository/product.repo');
 const { getDiscountAmount } = require('./discount.service');
+const { acquiredLock, releaseLock } = require('./redis.service');
 
 class CheckoutService {
   // checkout without login
@@ -119,10 +120,24 @@ class CheckoutService {
     // get new array Products
     const products = shop_order_ids_new.flatMap((order) => order.item_products);
     console.log(':::', products);
+    const acquireProduct = [];
 
     for (let i = 0; i < products.length; i++) {
       const { productId, quantity } = products[i];
+      const keyLock = await acquiredLock(productId, quantity, cartId);
+      acquireProduct.push(keyLock ? true : false);
+
+      if (keyLock) {
+        await releaseLock(keyLock);
+      }
     }
+
+    if (acquireProduct.includes(false)) {
+      throw new BadRequestError('Some products have been updated! Please try again');
+    }
+
+    const newOrder = await order.create();
+    return newOrder;
   }
 }
 
