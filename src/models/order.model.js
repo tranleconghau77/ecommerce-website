@@ -7,7 +7,7 @@ const COLLECTION_NAME = 'Orders';
 
 const orderSchema = new Schema(
   {
-    order_userid: {
+    order_userId: {
       type: Number,
       required: true,
       order_checkout: { type: Object, default: {} },
@@ -25,6 +25,14 @@ const orderSchema = new Schema(
         state,
         country
        */
+      order_payment: { type: Object, default: {} },
+      order_products: { type: Array, required: true },
+      order_trackingNumber: { type: String, default: '#0000131012023' },
+      order_status: {
+        type: String,
+        enum: ['pending', 'confirmed', 'shipped', 'cancelled'],
+        default: 'pending',
+      },
     },
   },
   {

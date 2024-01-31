@@ -1,6 +1,7 @@
 'use strict';
 
 const { BadRequestError } = require('../core/error.response');
+const orderModel = require('../models/order.model');
 const { findCartById } = require('../models/repository/cart.repo');
 const { checkoutProductByServer } = require('../models/repository/product.repo');
 const { getDiscountAmount } = require('./discount.service');
@@ -136,7 +137,13 @@ class CheckoutService {
       throw new BadRequestError('Some products have been updated! Please try again');
     }
 
-    const newOrder = await order.create();
+    const newOrder = await orderModel.create({
+      order_userId: userId,
+      order_checkout: checkout_order,
+      order_shipping: user_address,
+      order_payment: user_payment,
+      order_products: shop_order_ids_new,
+    });
     return newOrder;
   }
 }
