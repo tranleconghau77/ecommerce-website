@@ -144,6 +144,10 @@ class CheckoutService {
       order_payment: user_payment,
       order_products: shop_order_ids_new,
     });
+
+    // remove products if insert successfully
+    if (newOrder) {
+    }
     return newOrder;
   }
 }
