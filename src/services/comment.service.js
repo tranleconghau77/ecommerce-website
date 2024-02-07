@@ -16,6 +16,15 @@ class CommentService {
       comment_content: content,
       comment_parentId: parentCommentId,
     });
+
+    let rightValue;
+    if (parentCommentId) {
+      // reply comment
+    } else {
+        const maxRightValue = await Comment.findOne({
+            comment_productId: 
+        })
+    }
   }
 }
 
