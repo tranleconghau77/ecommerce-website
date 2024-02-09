@@ -1,6 +1,7 @@
 'use strict';
 
 const Comment = require('../models/comment.model');
+const { convertToObejctIdMongoDB } = require('../utils');
 
 class CommentService {
   /* 
@@ -21,9 +22,18 @@ class CommentService {
     if (parentCommentId) {
       // reply comment
     } else {
-        const maxRightValue = await Comment.findOne({
-            comment_productId: 
-        })
+      const maxRightValue = await Comment.findOne(
+        {
+          comment_productId: convertToObejctIdMongoDB(productId),
+        },
+        'comment_right',
+        { sort: { comment_right: -1 } },
+      );
+
+      if (maxRightValue) {
+        rightValue = maxRightValue.right + 1;
+      } else {
+      }
     }
   }
 }
