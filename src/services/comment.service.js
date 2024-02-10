@@ -33,7 +33,15 @@ class CommentService {
       if (maxRightValue) {
         rightValue = maxRightValue.right + 1;
       } else {
+        rightValue = 1;
       }
+
+      // insert to comment
+      comment.comment_left = rightValue;
+      comment.comment_right = rightValue + 1;
+
+      await comment.save();
+      return comment;
     }
   }
 }
