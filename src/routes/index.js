@@ -11,6 +11,7 @@ router.use(apiKey);
 router.use(permission('0000'));
 
 router.use('/v1/api/checkout', require('./checkout/index'));
+router.use('/v1/api/comment', require('./comment/index'));
 router.use('/v1/api/discount', require('./discount/index'));
 router.use('/v1/api/inventory', require('./inventory/index'));
 router.use('/v1/api/cart', require('./cart/index'));
