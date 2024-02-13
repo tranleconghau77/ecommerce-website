@@ -15,3 +15,5 @@ Run
     ```git clone https://github.com/tranleconghau77/ecommerce-website.git```
     ```npm install```
     ```npm start```
+
+docker exec -it redis-stack redis-cli
