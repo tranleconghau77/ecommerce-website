@@ -12,7 +12,12 @@ const COLLECTION_NAME = 'Notifications';
 
 const notificationSchema = new Schema(
   {
-    noti_type: { type: String, enum: ['ORDER-001', 'ORDER-002'] },
+    noti_type: {
+      type: String,
+      enum: ['ORDER-001', 'ORDER-002', 'PROMOTION-001', 'SHOP-001'],
+      required: true,
+    },
+    noti_senderId: { type: Number, required: true },
   },
   {
     timestamps: true,
