@@ -18,6 +18,9 @@ const notificationSchema = new Schema(
       required: true,
     },
     noti_senderId: { type: Number, required: true },
+    noti_received: { type: Number, required: true },
+    noti_content: { type: String, required: true },
+    noti_otpions: { type: Object, default: {} },
   },
   {
     timestamps: true,
