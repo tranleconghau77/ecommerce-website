@@ -19,6 +19,7 @@ const {
 } = require('../models/repository/product.repo');
 const { removeUndefinedProp, updateNestedObjectParser } = require('../utils');
 const { insertInventory } = require('../models/repository/inventory.repo');
+const { pushNotiToSystem } = require('./notification.service');
 
 // define Factory class to create product
 class ProductFactory {
@@ -127,7 +128,6 @@ class Product {
   // create new Product
   async createProduct(product_id) {
     this.product_shop = new ObjectId(this.product_shop);
-    console.log('PPPPPPPPPPPPP');
     const newProduct = await product.create({ ...this, _id: product_id });
     if (newProduct) {
       await insertInventory({
@@ -135,6 +135,20 @@ class Product {
         shopId: this.product_shop,
         stock: this.product_quantity,
       });
+
+      // push noti to system collection
+      pushNotiToSystem({
+        type: 'SHOP-001',
+        receivedId: 1,
+
+        senderId: this.product_shop,
+        options: {
+          product_name: this.product_name,
+          shop_name: this.product_shop,
+        },
+      })
+        .then((rs) => console.log(rs))
+        .catch(console.error);
     }
     return newProduct;
   }
