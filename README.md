@@ -17,3 +17,6 @@ Run
     ```npm start```
 
 docker exec -it redis-stack redis-cli
+
+notifications
+comment
